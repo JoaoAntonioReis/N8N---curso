@@ -1,0 +1,175 @@
+{
+  "name": "Agente 2 - Previsão do tempo",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2fa49797-4586-493a-869b-83bc74511a46",
+      "name": "When chat message received",
+      "webhookId": "4cddccf7-e5f6-448a-91a0-0f03c67ea087"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Você é um agente ressponsalvel por responder questoes sobre previsão do tempo. Sempre que perguntado, deve se responder ferramentas de previsao metereologicas que estao disponiveis na previsao_tempo. Caso o usuário nao solicicte dados sobre clima, utilize o wikipidia apra responder as perguntas com dados do mesmo.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        0
+      ],
+      "id": "7e8c40b9-3dc9-45de-8b9b-e42f8fd4358c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        208
+      ],
+      "id": "ac1fdbff-f67c-4e01-b940-fbb4a83e4060",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "LEPnwxHKCbGusA2a",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        208
+      ],
+      "id": "fd3df57c-dce4-400f-bac0-7a94526c3e0c",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        496,
+        208
+      ],
+      "id": "d399544d-50bc-437e-9bd8-41787acb223d",
+      "name": "Wikipedia"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "YUmC85Os0SZGvJDh",
+          "mode": "list",
+          "cachedResultName": "Workflow[sub workflows] - Previsao do tempo"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        208
+      ],
+      "id": "748f3d58-a0d5-4377-ace8-a55348bd18a9",
+      "name": "Previsao_tempo"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Previsao_tempo": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c1b88159-d4b1-4e24-a047-e39e0b5d1129",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e67cba9d62c8e77bdcc70daa1725ee6c7afc205e9467afceb909127bd88fb102"
+  },
+  "id": "Ah8FAD5cYiWOP9UL",
+  "tags": []
+}
