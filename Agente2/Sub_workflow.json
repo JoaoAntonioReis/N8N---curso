@@ -1,0 +1,184 @@
+{
+  "name": "Workflow[sub workflows] - Previsao do tempo",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d2fcdf46-d38e-47ef-b0f9-ab8072a08446",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "cityName": "recife"
+      },
+      "type": "n8n-nodes-base.openWeatherMap",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1ebad645-4f00-41b7-9c89-2e6e416aab55",
+      "name": "Dados da previsão",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "5GxlgktHFbyh9CTx",
+          "name": "OpenWeatherMap account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Coloque os parametros que eu enviar em um campo chamado de query.\n\nGaranta q esse campo seja uma string.\n\nwheater descripition: {{ $json.weather[0].description }}\n\ntemp: {{ $json.main.temp }}\n\nHumidity: {{ $json.main.humidity }}\n\nwind_speed: {{ $json.wind.speed }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        416,
+        0
+      ],
+      "id": "d3552c70-e261-43d3-a3a4-2e556fc81ce1",
+      "name": "Extrai os dados da previsão",
+      "credentials": {
+        "openAiApi": {
+          "id": "LEPnwxHKCbGusA2a",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.message.content }}",
+              "role": "system"
+            },
+            {
+              "content": "Converta o content para o idioma portugues br usando tom amigavel. Ensira emojis apra descrever a previsao do tempo de forma mais clara."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        768,
+        0
+      ],
+      "id": "898b6b4a-dd45-42d2-8760-96e91eb58bf7",
+      "name": "Output response",
+      "credentials": {
+        "openAiApi": {
+          "id": "LEPnwxHKCbGusA2a",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7bc0f1a3-572a-4cda-8cdb-dfc49b18b9c8",
+              "name": "message.content",
+              "value": "={{ $json.message.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "c8df6d94-ccef-4407-a5ef-ad54b84802d3",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Dados da previsão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados da previsão": {
+      "main": [
+        [
+          {
+            "node": "Extrai os dados da previsão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrai os dados da previsão": {
+      "main": [
+        [
+          {
+            "node": "Output response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output response": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "686f5404-7cab-4568-b727-ae5e11812c74",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e67cba9d62c8e77bdcc70daa1725ee6c7afc205e9467afceb909127bd88fb102"
+  },
+  "id": "YUmC85Os0SZGvJDh",
+  "tags": []
+}
